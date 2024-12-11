@@ -7,6 +7,7 @@ let availableTickets = 0; // Start with 0 tickets
 let maxCapacity = 200;    // Maximum capacity of tickets
 let soldTickets = 0;      // Start with 0 tickets sold
 
+// WebSocket server with noServer option for manual upgrade
 const wss = new WebSocket.Server({ noServer: true });
 
 wss.on('connection', (ws) => {
@@ -75,10 +76,12 @@ app.get('/', (req, res) => {
 
 const PORT = process.env.PORT || 4000; // Use the environment variable or default to 4000
 
+// Start the HTTP server
 app.server = app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
 
+// Handling WebSocket upgrade manually
 app.server.on('upgrade', (request, socket, head) => {
     wss.handleUpgrade(request, socket, head, (ws) => {
         wss.emit('connection', ws, request);
