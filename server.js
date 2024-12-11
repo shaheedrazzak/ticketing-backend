@@ -1,13 +1,15 @@
 const express = require('express');
 const WebSocket = require('ws');
-
+const cors = require('cors');
 const app = express();
 
-let availableTickets = 0; // Start with 0 tickets
-let maxCapacity = 200;    // Maximum capacity of tickets
-let soldTickets = 0;      // Start with 0 tickets sold
+app.use(cors());
 
-// WebSocket server with noServer option for manual upgrade
+let availableTickets = 0;
+let maxCapacity = 200;
+let soldTickets = 0;
+
+// Create WebSocket server with noServer option for manual upgrade
 const wss = new WebSocket.Server({ noServer: true });
 
 wss.on('connection', (ws) => {
@@ -16,9 +18,9 @@ wss.on('connection', (ws) => {
     // Send initial data to the client
     ws.send(JSON.stringify({
         type: 'init',
-        availableTickets,
-        maxCapacity,
-        soldTickets,
+        availableTickets: 0,
+        maxCapacity: 200,
+        soldTickets: 0,
     }));
 
     ws.on('message', (message) => {
@@ -69,12 +71,12 @@ wss.on('connection', (ws) => {
     });
 });
 
-// Add a simple HTTP route
+
 app.get('/', (req, res) => {
     res.send('WebSocket server is running!');
 });
 
-const PORT = process.env.PORT || 4000; // Use the environment variable or default to 4000
+const PORT = process.env.PORT || 4000;
 
 // Start the HTTP server
 app.server = app.listen(PORT, () => {
